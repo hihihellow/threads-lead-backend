@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "npx playwright install chromium && node server.js"
-  }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
