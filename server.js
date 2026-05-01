@@ -13,6 +13,8 @@ let leads = [];
 const seenTexts = new Set();
 let isScanning = false;
 
+const BASE_URL = "https://threads-lead-backend-production.up.railway.app";
+
 const keywords = [
   "架網站",
   "做網站",
@@ -165,8 +167,10 @@ app.get("/test", async (req, res) => {
   res.json({ ok: false });
 });
 
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 
   scanThreads();
   setInterval(scanThreads, 180000);
@@ -245,7 +249,7 @@ async function scanThreads() {
       console.log(`找到 ${posts.length} 筆`);
 
       for (const text of posts) {
-        await fetch("http://localhost:3000/check", {
+        await fetch(`${BASE_URL}/check`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
