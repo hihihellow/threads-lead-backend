@@ -201,6 +201,15 @@ async function fetchThreadsByKeyword(keyword) {
 
     await page.waitForTimeout(6000);
 
+    console.log("目前網址：", page.url());
+    console.log("頁面標題：", await page.title());
+
+    const bodyText = await page.locator("body").innerText().catch(() => "");
+    console.log("頁面前500字：", bodyText.slice(0, 500));
+
+    const articleCount = await page.locator("div[role='article']").count();
+    console.log("article 數量：", articleCount);
+
     for (let i = 0; i < 3; i++) {
       await page.mouse.wheel(0, 800);
       await page.waitForTimeout(1500);
