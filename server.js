@@ -57,7 +57,7 @@ async function sendPush(text, matched) {
 }
 
 app.post("/check", async (req, res) => {
-  const { text } = req.body;
+  const { text, author, permalink } = req.body;
 
   if (!text) {
     return res.status(400).json({ error: "缺少 text" });
@@ -77,8 +77,10 @@ const matched = matchedKeywords(cleanText);
   if (matched.length > 0) {
     const lead = {
       id: Date.now(),
-      text,
+      author: author || "未知作者",
+      text: cleanText,
       matched,
+      permalink: permalink || "",
       createdAt: new Date().toISOString(),
     };
 
@@ -131,7 +133,11 @@ app.get("/dashboard", (req, res) => {
           document.getElementById("list").innerHTML = leads.length
             ? leads.map(lead => \`
               <div class="card">
-                <div>\${lead.text}</div>
+                <div style="font-weight:bold; color:#93c5fd;">
+                  作者：\${lead.author || "未知作者"}
+                </div>
+                <div style="margin-top:8px;">\${lead.text}</div>
+                \${lead.permalink ? `<a href="\${lead.permalink}" target="_blank" style="color:#60a5fa;">查看原文</a>` : ""}
                 <div style="margin-top:12px;">
                   \${lead.matched.map(k => \`<span class="tag">\${k}</span>\`).join("")}
                 </div>
@@ -202,8 +208,29 @@ async function fetchThreadsByKeyword(keyword) {
 
     const posts = await page.$$eval("div[role='article']", (elements) =>
       elements
-        .map((el) => el.innerText)
-        .filter((text) => text && text.length > 10)
+        .map((el) => {
+          const text = el.innerText || "";
+
+          const links = [...el.querySelectorAll("a")].map(a => a.href);
+          const profileLink = links.find(href =>
+            href.includes("threads.net/@")
+          );
+
+          const author = profileLink
+            ? profileLink.split("threads.net/")[1].split("/")[0]
+            : "未知作者";
+
+          const permalink = links.find(href =>
+            href.includes("/post/")
+          ) || "";
+
+          return {
+            author,
+            text,
+            permalink,
+          };
+        })
+        .filter((post) => post.text && post.text.length > 10)
     );
 
     return posts;
@@ -248,13 +275,13 @@ async function scanThreads() {
 
       console.log(`找到 ${posts.length} 筆`);
 
-      for (const text of posts) {
+      for (const post of posts) {
         await fetch(`${BASE_URL}/check`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify(post),
         });
       }
 
