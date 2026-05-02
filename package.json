@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-  "start": "npx playwright install --with-deps chromium && node server.js"
+  "start": "node server.js"
 }
   "keywords": [],
   "author": "",
