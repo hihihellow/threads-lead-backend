@@ -84,7 +84,7 @@ const matched = matchedKeywords(cleanText);
 
     seenTexts.add(cleanText);
 
-    leads.unshift(cleanText);
+    leads.unshift(lead);
 
     const pushResult = await sendPush(text, matched);
 
