@@ -137,7 +137,7 @@ app.get("/dashboard", (req, res) => {
                   作者：\${lead.author || "未知作者"}
                 </div>
                 <div style="margin-top:8px;">\${lead.text}</div>
-                \${lead.permalink ? `<a href="\${lead.permalink}" target="_blank" style="color:#60a5fa;">查看原文</a>` : ""}
+                \${lead.permalink ? '<a href="' + lead.permalink + '" target="_blank" style="color:#60a5fa;">查看原文</a>' : ""}
                 <div style="margin-top:12px;">
                   \${lead.matched.map(k => \`<span class="tag">\${k}</span>\`).join("")}
                 </div>
