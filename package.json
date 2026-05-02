@@ -1,16 +1,18 @@
 {
   "name": "threads-lead-backend",
   "version": "1.0.0",
+  "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "npx playwright install chromium && node server.js"
   },
   "keywords": [],
+  "author": "",
+  "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "node-fetch": "^3.3.2",
     "playwright": "^1.59.1"
   }
 }
