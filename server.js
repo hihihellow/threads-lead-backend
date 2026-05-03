@@ -259,12 +259,32 @@ async function fetchThreadsByKeyword(keyword) {
       }
     }
 
-    const posts = blocks.map((text, index) => ({
-      author: "Threads搜尋結果",
-      text,
-      permalink: `https://www.threads.com/search?q=${encodeURIComponent(keyword)}`,
-      id: `${keyword}-${Date.now()}-${index}`,
-    }));
+    const postLinks = await page.$$eval("a[href*='/@'][href*='/post/']", (links) =>
+      links.map((a) => {
+        const href = a.href;
+        const container =
+          a.closest("div[role='article']") ||
+          a.closest("div") ||
+          a.parentElement;
+
+        const text = container?.innerText || "";
+        const authorMatch = href.match(/threads\.(?:com|net)\/(@[^/]+)/);
+
+        return {
+          author: authorMatch ? authorMatch[1] : "未知作者",
+          text,
+          permalink: href,
+        };
+      })
+    );
+
+    const posts = postLinks
+      .filter((post) =>
+        post.text &&
+        post.text.length >= 12 &&
+        matchedKeywords(post.text).length > 0 &&
+        post.permalink.includes("/post/")
+      );
 
     return posts;
   } catch (err) {
