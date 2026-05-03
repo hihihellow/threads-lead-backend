@@ -32,6 +32,18 @@ const keywords = [
   "架設網站",
 ];
 
+function isWithinOneDay(text) {
+  return (
+    text.includes("剛剛") ||
+    text.includes("分鐘") ||
+    text.includes("小時") ||
+    /\b([1-9]|1[0-9]|2[0-3])h\b/i.test(text) ||
+    /\b([1-9]|[1-5][0-9])m\b/i.test(text) ||
+    text.includes("1d") ||
+    text.includes("1天")
+  );
+}
+
 function matchedKeywords(text) {
   return keywords.filter((word) => text.includes(word));
 }
@@ -218,17 +230,34 @@ async function fetchThreadsByKeyword(keyword) {
 
     const fullText = await page.locator("body").innerText();
 
-    const blocks = fullText
+    const lines = fullText
       .split("\n")
       .map(t => t.trim())
-      .filter(t =>
-        t.length >= 12 &&
-        !t.includes("Translate") &&
-        !t.includes("Log in") &&
-        !t.includes("Search") &&
-        !t.includes("See what people are talking") &&
-        !t.includes("Threads")
-      );
+      .filter(Boolean);
+
+    const blocks = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const chunk = lines.slice(i, i + 8).join("\n");
+
+      if (
+        isWithinOneDay(chunk) &&
+        chunk.length >= 20 &&
+        !chunk.includes("Translate") &&
+        !chunk.includes("Log in") &&
+        !chunk.includes("Search") &&
+        !chunk.includes("Threads") &&
+        !chunk.includes("No results") &&
+        !chunk.includes("Continue with Instagram") &&
+        !chunk.includes("Terms") &&
+        !chunk.includes("Privacy") &&
+        !chunk.includes("Cookies") &&
+        !chunk.includes("Report a problem") &&
+        !chunk.includes("See what people are talking")
+      ) {
+        blocks.push(chunk);
+      }
+    }
 
     const posts = blocks.map((text, index) => ({
       author: "Threads搜尋結果",
