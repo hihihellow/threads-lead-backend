@@ -179,7 +179,7 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
   scanThreads();
-  setInterval(scanThreads, 180000);
+  setInterval(scanThreads, 600000);
 });
 
 async function fetchThreadsByKeyword(keyword) {
@@ -215,32 +215,26 @@ async function fetchThreadsByKeyword(keyword) {
       await page.waitForTimeout(1500);
     }
 
-    const posts = await page.$$eval("div[role='article']", (elements) =>
-      elements
-        .map((el) => {
-          const text = el.innerText || "";
+    const fullText = await page.locator("body").innerText();
 
-          const links = [...el.querySelectorAll("a")].map(a => a.href);
-          const profileLink = links.find(href =>
-            href.includes("threads.net/@")
-          );
+    const blocks = fullText
+      .split("\n")
+      .map(t => t.trim())
+      .filter(t =>
+        t.length >= 12 &&
+        !t.includes("Translate") &&
+        !t.includes("Log in") &&
+        !t.includes("Search") &&
+        !t.includes("See what people are talking") &&
+        !t.includes("Threads")
+      );
 
-          const author = profileLink
-            ? profileLink.split("threads.net/")[1].split("/")[0]
-            : "未知作者";
-
-          const permalink = links.find(href =>
-            href.includes("/post/")
-          ) || "";
-
-          return {
-            author,
-            text,
-            permalink,
-          };
-        })
-        .filter((post) => post.text && post.text.length > 10)
-    );
+    const posts = blocks.map((text, index) => ({
+      author: "Threads搜尋結果",
+      text,
+      permalink: "",
+      id: `${keyword}-${Date.now()}-${index}`,
+    }));
 
     return posts;
   } catch (err) {
