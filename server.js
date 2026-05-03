@@ -186,6 +186,13 @@ app.get("/test", async (req, res) => {
   res.json({ ok: false });
 });
 
+app.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    time: new Date().toISOString(),
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
@@ -346,10 +353,3 @@ async function scanThreads() {
     isScanning = false;
   }
 }
-
-app.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    time: new Date().toISOString(),
-  });
-});
