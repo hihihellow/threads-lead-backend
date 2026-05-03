@@ -25,22 +25,29 @@ const keywords = [
   "一頁式網站",
   "預約系統",
   "後台管理",
-  "系統",
+  "網頁設計",
   "網站架設",
-  "系統架設",
-  "網站",
-  "架設網站",
+  "想做網站",
+  "需要網站",
+  "系統"
 ];
 
-function isWithinOneDay(text) {
+function isWithinThreeDays(text) {
   return (
     text.includes("剛剛") ||
     text.includes("分鐘") ||
     text.includes("小時") ||
+
     /\b([1-9]|1[0-9]|2[0-3])h\b/i.test(text) ||
     /\b([1-9]|[1-5][0-9])m\b/i.test(text) ||
+
     text.includes("1d") ||
-    text.includes("1天")
+    text.includes("2d") ||
+    text.includes("3d") ||
+
+    text.includes("1天") ||
+    text.includes("2天") ||
+    text.includes("3天")
   );
 }
 
@@ -248,7 +255,7 @@ async function fetchThreadsByKeyword(keyword) {
       const chunk = lines.slice(i, i + 8).join("\n");
 
       if (
-        isWithinOneDay(chunk) &&
+        isWithinThreeDays(chunk) &&
         chunk.length >= 20 &&
         !chunk.includes("Translate") &&
         !chunk.includes("Log in") &&
@@ -312,23 +319,8 @@ async function scanThreads() {
 
   isScanning = true;
 
-  const searchKeywords = [
-    "做網站",
-    "架網站",
-    "電商網站",
-    "網站設計",
-    "找人做網站",
-    "一頁式網站",
-    "網頁設計",
-    "網站架設",
-    "想做網站",
-    "需要網站",
-    "網站",
-    "官網",
-  ];
-
   try {
-    for (const keyword of searchKeywords) {
+    for (const keyword of keywords) {
       console.log("🔍 搜尋中：", keyword);
 
       const posts = await fetchThreadsByKeyword(keyword);
