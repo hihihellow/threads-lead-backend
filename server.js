@@ -36,7 +36,7 @@ function matchedKeywords(text) {
   return keywords.filter((word) => text.includes(word));
 }
 
-async function sendPush(text, matched) {
+async function sendPush(text, matched, permalink = "") {
   const res = await fetch("https://exp.host/--/api/v2/push/send", {
     method: "POST",
     headers: {
@@ -49,6 +49,7 @@ async function sendPush(text, matched) {
       data: {
         source: "threads-test",
         matched,
+        url: permalink,
       },
     }),
   });
@@ -88,7 +89,7 @@ const matched = matchedKeywords(cleanText);
 
     leads.unshift(lead);
 
-    const pushResult = await sendPush(text, matched);
+    const pushResult = await sendPush(cleanText, matched, lead.permalink);
 
     return res.json({
       matched: true,
@@ -232,7 +233,7 @@ async function fetchThreadsByKeyword(keyword) {
     const posts = blocks.map((text, index) => ({
       author: "Threads搜尋結果",
       text,
-      permalink: "",
+      permalink: `https://www.threads.com/search?q=${encodeURIComponent(keyword)}`,
       id: `${keyword}-${Date.now()}-${index}`,
     }));
 
