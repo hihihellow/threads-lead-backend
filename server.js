@@ -346,3 +346,10 @@ async function scanThreads() {
     isScanning = false;
   }
 }
+
+app.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    time: new Date().toISOString(),
+  });
+});
