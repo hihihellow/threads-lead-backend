@@ -16,20 +16,9 @@ let isScanning = false;
 const BASE_URL = "https://threads-lead-backend-production.up.railway.app";
 
 const keywords = [
-  "架網站",
-  "做網站",
-  "電商網站",
   "官網",
-  "網站設計",
-  "找人做網站",
-  "一頁式網站",
-  "預約系統",
-  "後台管理",
-  "網頁設計",
-  "網站架設",
-  "想做網站",
-  "需要網站",
-  "系統"
+  "系統",
+  "網站",
 ];
 
 function isWithinThreeDays(text) {
@@ -92,7 +81,7 @@ app.post("/check", async (req, res) => {
      });
   }
 
-  
+
 const matched = matchedKeywords(cleanText);
 
   if (matched.length > 0) {
@@ -207,7 +196,7 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
   scanThreads();
-  setInterval(scanThreads, 600000);
+  setInterval(scanThreads, 120000);
 });
 
 async function fetchThreadsByKeyword(keyword) {
@@ -297,6 +286,7 @@ async function fetchThreadsByKeyword(keyword) {
       .filter((post) =>
         post.text &&
         post.text.length >= 12 &&
+        isWithinThreeDays(post.text) &&
         matchedKeywords(post.text).length > 0 &&
         post.permalink.includes("/post/")
       );
