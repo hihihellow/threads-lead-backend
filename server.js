@@ -17,8 +17,14 @@ const BASE_URL = "https://threads-lead-backend-production.up.railway.app";
 
 const keywords = [
   "官網",
-  "系統",
-  "網站",
+  "做網站",
+  "架網站",
+  "電商網站",
+  "網站設計",
+  "網頁設計",
+  "網站架設",
+  "需要網站",
+  "找人做網站",
 ];
 
 function isWithinThreeDays(text) {
@@ -196,7 +202,7 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
   scanThreads();
-  setInterval(scanThreads, 120000);
+  setInterval(scanThreads, 600000);
 });
 
 async function fetchThreadsByKeyword(keyword) {
